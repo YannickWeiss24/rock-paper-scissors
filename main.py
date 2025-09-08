@@ -108,4 +108,5 @@ def main():
                 break
 
 if __name__ == "__main__":
+    print("New Game")
     main()
