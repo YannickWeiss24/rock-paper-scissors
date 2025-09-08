@@ -36,16 +36,15 @@ def start_game():
     players += 1
     return (players, winning_points)
 
-def roll_hands(players):
+def roll_hands(players, round):
     rolls = []
-    choice = input_number("What do you play? Enter 1 for Rock, 2 for Paper, 3 for Scissors.", 1, 3)
+    choice = input_number(f"\nRound {round}\nWhat do you play? Enter 1 for Rock, 2 for Paper, 3 for Scissors.", 1, 3)
     print(f"You play {SYMBOLS[choice]}.")
     rolls.append(choice)
     for i in range(players-1):
         value = random.choice([1,2,3])
         rolls.append(value)
         print(f"Player {i+2} plays {SYMBOLS[value]}.")
-    print(f"Rolls: {rolls}")
     return rolls
 
 def get_points(players, rolls):
@@ -78,16 +77,29 @@ def get_points(players, rolls):
         for i in range(players):
             if points[i] == 1:
                 winners.append(i+1)
-        print(f"This rounds winners:", *winners)
+        if points[0] == 1:
+            print(f"You won! This rounds winners:", *winners)
+        else:
+            print(f"You lost! This rounds winners:", *winners)
     return points
 
 def get_winner(points, winning_points):
-    print(f"Points: {points}")
     winners = []
     for i in range(len(points)):
         if points[i] == winning_points:
             winners.append(i+1)
     return winners
+
+def print_points(round, *points):
+    player = 1
+    s = f"Points after round {round}: "
+    for i in points:
+        if player == 1:
+            s += f"You: {i}, "
+        else:
+            s += f"Player {player}: {i}, "
+        player += 1
+    print(s)
 
 def main():
     while True:
@@ -98,15 +110,22 @@ def main():
         round = 0
         while True:
             round += 1
-            points = get_points(players, roll_hands(players))
+            points = get_points(players, roll_hands(players, round))
             for i in range(players):
                 current_points[i] += points[i]
-                print(f"After round {round}, Player {i+1} has {current_points[i]} points.")
+                #print(f"After round {round}, Player {i+1} has {current_points[i]} points.")
+            print_points(round, *current_points)
             winners = get_winner(current_points, winning_points)
             if len(winners) > 0:
-                print(f"Winning Players:", *winners)
-                break
+                if 1 in winners:
+                    print(f"\nYou won the game! Winning Players:", *winners)
+                else:
+                    print(f"\nYou lost the game! Winning Players:", *winners)
+                new_game = input_number("New game? Enter 1 for yes, 0 for no.", 0, 1)
+                if new_game == 1:
+                    break
+                else:
+                    sys.exit("Bye!")
 
 if __name__ == "__main__":
-    print("New Game")
     main()
